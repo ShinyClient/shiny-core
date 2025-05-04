@@ -15,42 +15,42 @@ import { extractTarGz, extractZip } from '../common/util/FileUtils'
 const log = LoggerUtil.getLogger('JavaGuard')
 
 export interface JavaVersion {
-    major: number;
-    minor: number;
-    patch: number;
+    major: number
+    minor: number
+    patch: number
 }
 
 export interface AdoptiumJdk {
     binary: {
-        architecture: string;
-        download_count: number;
-        heap_size: string;
-        image_type: 'jdk' | 'debugimage' | 'testimage';
-        jvm_impl: string;
-        os: string;
+        architecture: string
+        download_count: number
+        heap_size: string
+        image_type: 'jdk' | 'debugimage' | 'testimage'
+        jvm_impl: string
+        os: string
         package: {
-            checksum: string;
-            checksum_link: string;
-            download_count: number;
-            link: string;
-            metadata_link: string;
-            name: string;
-            size: number;
-        };
-        project: string;
-        scm_ref: string;
-        updated_at: string;
-    };
-    release_name: string;
-    vendor: string;
+            checksum: string
+            checksum_link: string
+            download_count: number
+            link: string
+            metadata_link: string
+            name: string
+            size: number
+        }
+        project: string
+        scm_ref: string
+        updated_at: string
+    }
+    release_name: string
+    vendor: string
     version: {
-        build: number;
-        major: number;
-        minor: number;
-        openjdk_version: string;
-        security: number;
-        semver: string;
-    };
+        build: number
+        major: number
+        minor: number
+        openjdk_version: string
+        security: number
+        semver: string
+    }
 }
 
 // REFERENCE
@@ -77,236 +77,236 @@ export interface HotSpotSettings {
     /**
      * Character encoding for the default locale.
      */
-    'file.encoding': string;
+    'file.encoding': string
     /**
      * Character that separates components of a file path. This is "/" on UNIX and "\" on Windows.
      */
-    'file.separator': string;
+    'file.separator': string
     /**
      * Path used to find directories and JAR archives containing class files. Elements of the class path are separated by a platform-specific character specified in the path.separator property.
      * This will be blank on -XshowSettings for obvious reasons.
      */
-    'java.class.path': string;
+    'java.class.path': string
     /**
      * Java class format version number.
      * Read as string, actually a number.
      */
-    'java.class.version': string;
+    'java.class.version': string
     /**
      * Java installation directory (in 8, the path to the bundled JRE if using the JDK).
      */
-    'java.home': string;
+    'java.home': string
     /**
      * Default temp file path.
      */
-    'java.io.tmpdir': string;
+    'java.io.tmpdir': string
     /**
      * List of paths to search when loading libraries.
      */
-    'java.library.path': string[];
+    'java.library.path': string[]
     /**
      * Runtime Name *Undocumented*
      * https://github.com/openjdk/jdk/blob/master/src/java.base/share/classes/java/lang/VersionProps.java.template#L105
      */
-    'java.runtime.name': string;
+    'java.runtime.name': string
     /**
      * Runtime Version *Undocumented*
      * https://github.com/openjdk/jdk/blob/master/src/java.base/share/classes/java/lang/VersionProps.java.template#L104
      * Ex. 17: 17.0.5+8; 8: 1.8.0_352-b08
      */
-    'java.runtime.version': string;
+    'java.runtime.version': string
     /**
      * Undefined for the initial release. Indicates the runtime implements a revised version of the specification.
      * https://bugs.openjdk.org/browse/JDK-8286766
      */
-    'java.specification.maintenance.version'?: string;
+    'java.specification.maintenance.version'?: string
     /**
      * Java Runtime Environment specification name.
      */
-    'java.specification.name': string;
+    'java.specification.name': string
     /**
      * Java Runtime Environment specification vendor.
      */
-    'java.specification.vendor': string;
+    'java.specification.vendor': string
     /**
      * Java Runtime Environment specification version, whose value is the feature element of the runtime version
      *
      * Ex. 17: 17; 8: 1.8
      */
-    'java.specification.version': string;
+    'java.specification.version': string
     /**
      * Java Runtime Environment vendor
      */
-    'java.vendor': string;
+    'java.vendor': string
     /**
      * Java vendor URL
      */
-    'java.vendor.url': string;
+    'java.vendor.url': string
     /**
      * Java vendor bug report URL *Undocumented* (but standard)
      */
-    'java.vendor.url.bug': string;
+    'java.vendor.url.bug': string
     /**
      * Java vendor version (optional)
      * JDK 10+
      * https://openjdk.org/jeps/322
      */
-    'java.vendor.version'?: string;
+    'java.vendor.version'?: string
     /**
      * Java Runtime Environment version
      * Ex. 17: 17.0.5; 8: 1.8.0_352
      */
-    'java.version': string;
+    'java.version': string
     /**
      * Java Runtime Environment version date, in ISO-8601 YYYY-MM-DD format.
      * JDK 10+
      * https://openjdk.org/jeps/322
      */
-    'java.version.date'?: string;
+    'java.version.date'?: string
     /**
      * Internal flag, Compressed Oop Mode the VM is running in (for JDK internal tests).
      * JDK 9+
      * https://bugs.openjdk.org/browse/JDK-8064457
      */
-    'java.vm.compressedOopsMode'?: string;
+    'java.vm.compressedOopsMode'?: string
     /**
      * No summary information available, part of the JDK for a very long time.
      */
-    'java.vm.info': string;
+    'java.vm.info': string
     /**
      * Java Virtual Machine implementation name.
      */
-    'java.vm.name': string;
+    'java.vm.name': string
     /**
      * 	Java Runtime Environment specification name.
      */
-    'java.vm.specification.name': string;
+    'java.vm.specification.name': string
     /**
      * Java Runtime Environment specification vendor.
      */
-    'java.vm.specification.vendor': string;
+    'java.vm.specification.vendor': string
     /**
      * Java Virtual Machine specification version, whose value is the feature element of the runtime version.
      *
      * Ex. 17: 17; 8: 1.8
      */
-    'java.vm.specification.version': string;
+    'java.vm.specification.version': string
     /**
      * Java Virtual Machine implementation vendor.
      */
-    'java.vm.vendor': string;
+    'java.vm.vendor': string
     /**
      * Java Virtual Machine implementation version.
      * Ex. 17: 17.0.5+8; 8: 25.352-b08
      */
-    'java.vm.version': string;
+    'java.vm.version': string
     /**
      * Probably an internal flag, don't use. On 17, not 8.
      */
-    'jdk.debug'?: string;
+    'jdk.debug'?: string
     /**
      * Line separator ("\n" on UNIX, "\r \n" on Windows)
      */
-    'line.separator': string;
+    'line.separator': string
     /**
      * Character encoding name derived from the host environment and/or the user's settings. Setting this system property has no effect.
      * https://openjdk.org/jeps/400
      * JDK 17+
      */
-    'native.encoding'?: string;
+    'native.encoding'?: string
     /**
      * Operating system architecture.
      */
-    'os.arch': string;
+    'os.arch': string
     /**
      * Operating system name.
      */
-    'os.name': string;
+    'os.name': string
     /**
      * Operating system version.
      * Looks like this can be parsed as a number.
      */
-    'os.version': string;
+    'os.version': string
     /**
      * 	Path separator (":" on UNIX, ";" on Windows)
      */
-    'path.separator': string;
+    'path.separator': string
     /**
      * Platform word size. Examples: "32", "64", "unknown"
      */
-    'sun.arch.data.model': string;
+    'sun.arch.data.model': string
     /**
      * From here, the VM loads VM libraries (like those related to JVMTI) and any libraries needed for classes on the bootclasspath. Read-only property.
      */
-    'sun.boot.library.path': string;
+    'sun.boot.library.path': string
     /**
      * Endianess of CPU, "little" or "big".
      */
-    'sun.cpu.endian': string;
+    'sun.cpu.endian': string
     /**
      * The names of the native instruction sets executable on this platform.
      */
-    'sun.cpu.isalist': string;
+    'sun.cpu.isalist': string
     /**
      * Platform-specific, follows sun.cpu.endian, for example "UnicodeLittle".
      */
-    'sun.io.unicode.encoding': string;
+    'sun.io.unicode.encoding': string
     /**
      * Internal, used to determine if java process came from a known launcher.
      * Ex. https://github.com/openjdk/jdk/blob/master/src/java.desktop/windows/classes/sun/java2d/windows/WindowsFlags.java#L86
      */
-    'sun.java.launcher': string;
+    'sun.java.launcher': string
     /**
      * Encoding used to interpret platform strings.
      * https://happygiraffe.net/2009/09/24/java-platform-encoding/
      */
-    'sun.jnu.encoding': string;
+    'sun.jnu.encoding': string
     /**
      * Tiered, client, or server
      * https://stackoverflow.com/questions/14818584/which-java-hotspot-jit-compiler-is-running
      */
-    'sun.management.compiler': string;
+    'sun.management.compiler': string
     /**
      * Internal
      */
-    'sun.os.patch.level': string;
+    'sun.os.patch.level': string
     /**
      * Internal
      */
-    'sun.stderr.encoding': string;
+    'sun.stderr.encoding': string
     /**
      * Internal
      */
-    'sun.stdout.encoding': string;
+    'sun.stdout.encoding': string
     /**
      * Country (system dependent).
      */
-    'user.country': string;
+    'user.country': string
     /**
      * User's current working directory.
      */
-    'user.dir': string;
+    'user.dir': string
     /**
      * 	User's home directory.
      */
-    'user.home': string;
+    'user.home': string
     /**
      * Two-letter language code of the default locale (system dependent).
      */
-    'user.language': string;
+    'user.language': string
     /**
      * User's account name.
      */
-    'user.name': string;
+    'user.name': string
     /**
      * User specified script.
      * https://bugs.openjdk.org/browse/JDK-6990452
      */
-    'user.script': string;
+    'user.script': string
     /**
      * Variant (more specific than country and language).
      */
-    'user.variant': string;
+    'user.variant': string
 }
 
 /**
@@ -384,10 +384,10 @@ export async function resolveJvmSettings(paths: string[]): Promise<{ [path: stri
 }
 
 export interface JvmDetails {
-    semver: JavaVersion;
-    semverStr: string;
-    vendor: string;
-    path: string;
+    semver: JavaVersion
+    semverStr: string
+    vendor: string
+    path: string
 }
 
 export function filterApplicableJavaPaths(
@@ -522,8 +522,8 @@ export async function latestAdoptium(major: number, dataDir: string): Promise<As
         process.platform === Platform.WIN32
             ? 'windows'
             : process.platform === Platform.DARWIN
-            ? 'mac'
-            : process.platform
+                ? 'mac'
+                : process.platform
     const arch: string = process.arch === Architecture.ARM64 ? 'aarch64' : Architecture.X64
     const url = `https://api.adoptium.net/v3/assets/latest/${major}/hotspot?vendor=eclipse`
 
@@ -570,19 +570,19 @@ export async function latestCorretto(major: number, dataDir: string): Promise<As
         case Platform.WIN32:
             sanitizedOS = 'windows'
             ext = 'zip'
-            break;
+            break
         case Platform.DARWIN:
             sanitizedOS = 'macos'
             ext = 'tar.gz'
-            break;
+            break
         case Platform.LINUX:
             sanitizedOS = 'linux'
             ext = 'tar.gz'
-            break;
+            break
         default:
             sanitizedOS = process.platform
             ext = 'tar.gz'
-            break;
+            break
     }
 
     const url = `https://corretto.aws/downloads/latest/amazon-corretto-${major}-${arch}-${sanitizedOS}-jdk.${ext}`
@@ -709,7 +709,7 @@ export async function loadMojangLauncherData(): Promise<LauncherJson | null> {
         })
         return res.body
     } catch (err) {
-        log.error("Failed to retrieve Mojang's launcher.json file.")
+        log.error('Failed to retrieve Mojang\'s launcher.json file.')
         return null
     }
 }
@@ -785,7 +785,7 @@ export function javaVersionToString({ major, minor, patch }: JavaVersion): strin
 }
 
 export interface JavaDiscoverer {
-    discover(): Promise<string[]>;
+    discover(): Promise<string[]>
 }
 
 export class PathBasedJavaDiscoverer implements JavaDiscoverer {
@@ -968,13 +968,13 @@ export async function getValidatableJavaPaths(dataDir: string): Promise<string[]
     switch (process.platform) {
         case Platform.WIN32:
             discoverers = await getWin32Discoverers(dataDir)
-            break;
+            break
         case Platform.DARWIN:
             discoverers = await getDarwinDiscoverers(dataDir)
-            break;
+            break
         case Platform.LINUX:
             discoverers = await getLinuxDiscoverers(dataDir)
-            break;
+            break
         default:
             discoverers = []
             log.warn(`Unable to discover Java paths on platform: ${process.platform}`)
