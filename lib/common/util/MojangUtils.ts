@@ -1,43 +1,43 @@
-import { Rule, Natives } from '../../dl/mojang/MojangTypes';
+import { Rule, Natives } from '../../dl/mojang/MojangTypes'
 
 export function getMojangOS(): string {
-    const opSys = process.platform;
+    const opSys = process.platform
     switch (opSys) {
         case 'darwin':
-            return 'osx';
+            return 'osx'
         case 'win32':
-            return 'windows';
+            return 'windows'
         case 'linux':
-            return 'linux';
+            return 'linux'
         default:
-            return opSys;
+            return opSys
     }
 }
 
 export function validateLibraryRules(rules?: Rule[]): boolean {
     if (rules == null) {
-        return false;
+        return false
     }
     for (const rule of rules) {
         if (rule.action != null && rule.os != null) {
-            const osName = rule.os.name;
-            const osMoj = getMojangOS();
+            const osName = rule.os.name
+            const osMoj = getMojangOS()
             if (rule.action === 'allow') {
-                return osName === osMoj;
+                return osName === osMoj
             } else if (rule.action === 'disallow') {
-                return osName !== osMoj;
+                return osName !== osMoj
             }
         }
     }
-    return true;
+    return true
 }
 
 export function validateLibraryNatives(natives?: Natives): boolean {
-    return natives == null ? true : Object.hasOwnProperty.call(natives, getMojangOS());
+    return natives == null ? true : Object.hasOwnProperty.call(natives, getMojangOS())
 }
 
 export function isLibraryCompatible(rules?: Rule[], natives?: Natives): boolean {
-    return rules == null ? validateLibraryNatives(natives) : validateLibraryRules(rules);
+    return rules == null ? validateLibraryNatives(natives) : validateLibraryRules(rules)
 }
 
 /**
@@ -48,22 +48,22 @@ export function isLibraryCompatible(rules?: Rule[], natives?: Natives): boolean 
  * @param {string} actual The actual version.
  */
 export function mcVersionAtLeast(desired: string, actual: string): boolean {
-    const des = desired.split('.');
-    const act = actual.split('.');
+    const des = desired.split('.')
+    const act = actual.split('.')
     if (act.length < des.length) {
         for (let i = act.length; i < des.length; i++) {
-            act[i] = '0';
+            act[i] = '0'
         }
     }
 
     for (let i = 0; i < des.length; i++) {
-        const parsedDesired = parseInt(des[i]);
-        const parsedActual = parseInt(act[i]);
+        const parsedDesired = parseInt(des[i])
+        const parsedActual = parseInt(act[i])
         if (parsedActual > parsedDesired) {
-            return true;
+            return true
         } else if (parsedActual < parsedDesired) {
-            return false;
+            return false
         }
     }
-    return true;
+    return true
 }
