@@ -8,22 +8,22 @@ import {
     JavaPlatformOptions,
     Platform,
     JdkDistribution,
-} from 'shiny-types';
-import { MavenComponents, MavenUtil } from '../util/MavenUtil';
-import { join } from 'path';
-import { LoggerUtil } from '../../util/LoggerUtil';
-import { mcVersionAtLeast } from '../util/MojangUtils';
+} from 'shiny-types'
+import { MavenComponents, MavenUtil } from '../util/MavenUtil'
+import { join } from 'path'
+import { LoggerUtil } from '../../util/LoggerUtil'
+import { mcVersionAtLeast } from '../util/MojangUtils'
 
-const logger = LoggerUtil.getLogger('DistributionFactory');
+const logger = LoggerUtil.getLogger('DistributionFactory')
 
 export class ShinyDistribution {
-    private mainServerIndex!: number;
+    private mainServerIndex!: number
 
-    public readonly servers: ShinyServer[];
+    public readonly servers: ShinyServer[]
 
     constructor(public readonly rawDistribution: Distribution, commonDir: string, instanceDir: string) {
-        this.resolveMainServerIndex();
-        this.servers = this.rawDistribution.servers.map(s => new ShinyServer(s, commonDir, instanceDir));
+        this.resolveMainServerIndex()
+        this.servers = this.rawDistribution.servers.map(s => new ShinyServer(s, commonDir, instanceDir))
     }
 
     private resolveMainServerIndex(): void {
@@ -31,71 +31,71 @@ export class ShinyDistribution {
             for (let i = 0; i < this.rawDistribution.servers.length; i++) {
                 if (this.mainServerIndex == null) {
                     if (this.rawDistribution.servers[i].mainServer) {
-                        this.mainServerIndex = i;
+                        this.mainServerIndex = i
                     }
                 } else {
-                    this.rawDistribution.servers[i].mainServer = false;
+                    this.rawDistribution.servers[i].mainServer = false
                 }
             }
             if (this.mainServerIndex == null) {
-                this.mainServerIndex = 0;
-                this.rawDistribution.servers[this.mainServerIndex].mainServer = true;
+                this.mainServerIndex = 0
+                this.rawDistribution.servers[this.mainServerIndex].mainServer = true
             }
         } else {
-            logger.warn('Distribution has 0 configured servers. This doesnt seem right..');
-            this.mainServerIndex = 0;
+            logger.warn('Distribution has 0 configured servers. This doesnt seem right..')
+            this.mainServerIndex = 0
         }
     }
 
     public getMainServer(): ShinyServer | null {
-        return this.mainServerIndex < this.servers.length ? this.servers[this.mainServerIndex] : null;
+        return this.mainServerIndex < this.servers.length ? this.servers[this.mainServerIndex] : null
     }
 
     public getServerById(id: string): ShinyServer | null {
-        return this.servers.find(s => s.rawServer.id === id) || null;
+        return this.servers.find(s => s.rawServer.id === id) || null
     }
 }
 
 export class ShinyServer {
-    public readonly modules: ShinyModule[];
-    public readonly hostname: string;
-    public readonly port: number;
-    public readonly effectiveJavaOptions: Required<JavaVersionProps>;
+    public readonly modules: ShinyModule[]
+    public readonly hostname: string
+    public readonly port: number
+    public readonly effectiveJavaOptions: Required<JavaVersionProps>
 
     constructor(public readonly rawServer: Server, commonDir: string, instanceDir: string) {
-        const { hostname, port } = this.parseAddress();
-        this.hostname = hostname;
-        this.port = port;
-        this.effectiveJavaOptions = this.parseEffectiveJavaOptions();
-        this.modules = rawServer.modules.map(m => new ShinyModule(m, rawServer.id, commonDir, instanceDir));
+        const { hostname, port } = this.parseAddress()
+        this.hostname = hostname
+        this.port = port
+        this.effectiveJavaOptions = this.parseEffectiveJavaOptions()
+        this.modules = rawServer.modules.map(m => new ShinyModule(m, rawServer.id, commonDir, instanceDir))
     }
 
-    private parseAddress(): { hostname: string; port: number } {
+    private parseAddress(): { hostname: string, port: number } {
         // Srv record lookup here if needed.
         if (this.rawServer.address.includes(':')) {
-            const pieces = this.rawServer.address.split(':');
-            const port = Number(pieces[1]);
+            const pieces = this.rawServer.address.split(':')
+            const port = Number(pieces[1])
 
             if (!Number.isInteger(port)) {
-                throw new Error(`Malformed server address for ${this.rawServer.id}. Port must be an integer!`);
+                throw new Error(`Malformed server address for ${this.rawServer.id}. Port must be an integer!`)
             }
 
-            return { hostname: pieces[0], port };
+            return { hostname: pieces[0], port }
         } else {
-            return { hostname: this.rawServer.address, port: 25565 };
+            return { hostname: this.rawServer.address, port: 25565 }
         }
     }
 
     private parseEffectiveJavaOptions(): Required<JavaVersionProps> {
-        const options: JavaPlatformOptions[] = this.rawServer.javaOptions?.platformOptions ?? [];
+        const options: JavaPlatformOptions[] = this.rawServer.javaOptions?.platformOptions ?? []
 
-        const mergeableProps: JavaVersionProps[] = [];
+        const mergeableProps: JavaVersionProps[] = []
         for (const option of options) {
             if (option.platform === process.platform) {
                 if (option.architecture === process.arch) {
-                    mergeableProps[0] = option;
+                    mergeableProps[0] = option
                 } else {
-                    mergeableProps[1] = option;
+                    mergeableProps[1] = option
                 }
             }
         }
@@ -103,50 +103,50 @@ export class ShinyServer {
             distribution: this.rawServer.javaOptions?.distribution,
             supported: this.rawServer.javaOptions?.supported,
             suggestedMajor: this.rawServer.javaOptions?.suggestedMajor,
-        };
+        }
 
-        const merged: JavaVersionProps = {};
+        const merged: JavaVersionProps = {}
         for (let i = mergeableProps.length - 1; i >= 0; i--) {
             if (mergeableProps[i] != null) {
-                merged.distribution = mergeableProps[i].distribution;
-                merged.supported = mergeableProps[i].supported;
-                merged.suggestedMajor = mergeableProps[i].suggestedMajor;
+                merged.distribution = mergeableProps[i].distribution
+                merged.supported = mergeableProps[i].supported
+                merged.suggestedMajor = mergeableProps[i].suggestedMajor
             }
         }
 
-        return this.defaultUndefinedJavaOptions(merged);
+        return this.defaultUndefinedJavaOptions(merged)
     }
 
     private defaultUndefinedJavaOptions(props: JavaVersionProps): Required<JavaVersionProps> {
-        const [defaultRange, defaultSuggestion] = this.defaultJavaVersion();
+        const [defaultRange, defaultSuggestion] = this.defaultJavaVersion()
         return {
             supported: props.supported ?? defaultRange,
             distribution: props.distribution ?? this.defaultJavaPlatform(),
             suggestedMajor: props.suggestedMajor ?? defaultSuggestion,
-        };
+        }
     }
 
     private defaultJavaVersion(): [string, number] {
         if (mcVersionAtLeast('1.20.5', this.rawServer.minecraftVersion)) {
-            return ['>=21.x', 21];
+            return ['>=21.x', 21]
         } else if (mcVersionAtLeast('1.17', this.rawServer.minecraftVersion)) {
-            return ['>=17.x', 17];
+            return ['>=17.x', 17]
         } else {
-            return ['8.x', 8];
+            return ['8.x', 8]
         }
     }
 
     private defaultJavaPlatform(): JdkDistribution {
-        return process.platform === Platform.DARWIN ? JdkDistribution.CORRETTO : JdkDistribution.TEMURIN;
+        return process.platform === Platform.DARWIN ? JdkDistribution.CORRETTO : JdkDistribution.TEMURIN
     }
 }
 
 export class ShinyModule {
-    public readonly subModules: ShinyModule[];
+    public readonly subModules: ShinyModule[]
 
-    private readonly mavenComponents: Readonly<MavenComponents>;
-    private readonly required: Readonly<Required<ShinyRequired>>;
-    private readonly localPath: string;
+    private readonly mavenComponents: Readonly<MavenComponents>
+    private readonly required: Readonly<Required<ShinyRequired>>
+    private readonly localPath: string
 
     constructor(
         public readonly rawModule: Module,
@@ -154,49 +154,49 @@ export class ShinyModule {
         commonDir: string,
         instanceDir: string
     ) {
-        this.mavenComponents = this.resolveMavenComponents();
-        this.required = this.resolveRequired();
-        this.localPath = this.resolveLocalPath(commonDir, instanceDir);
+        this.mavenComponents = this.resolveMavenComponents()
+        this.required = this.resolveRequired()
+        this.localPath = this.resolveLocalPath(commonDir, instanceDir)
 
         if (this.rawModule.subModules != null) {
-            this.subModules = this.rawModule.subModules.map(m => new ShinyModule(m, serverId, commonDir, instanceDir));
+            this.subModules = this.rawModule.subModules.map(m => new ShinyModule(m, serverId, commonDir, instanceDir))
         } else {
-            this.subModules = [];
+            this.subModules = []
         }
     }
 
     private resolveMavenComponents(): MavenComponents {
         // Files need not have a maven identifier if they provide a path.
         if (this.rawModule.type === Type.File && this.rawModule.artifact.path != null) {
-            return null! as MavenComponents;
+            return null! as MavenComponents
         }
         // Version Manifests never provide a maven identifier.
         if (this.rawModule.type === Type.VersionManifest) {
-            return null! as MavenComponents;
+            return null! as MavenComponents
         }
 
-        const isMavenId = MavenUtil.isMavenIdentifier(this.rawModule.id);
+        const isMavenId = MavenUtil.isMavenIdentifier(this.rawModule.id)
 
         if (!isMavenId) {
             if (this.rawModule.type !== Type.File) {
                 throw new Error(
                     `Module ${this.rawModule.name} (${this.rawModule.id}) of type ${this.rawModule.type} must have a valid maven identifier!`
-                );
+                )
             } else {
                 throw new Error(
                     `Module ${this.rawModule.name} (${this.rawModule.id}) of type ${this.rawModule.type} must either declare an artifact path or have a valid maven identifier!`
-                );
+                )
             }
         }
 
         try {
-            return MavenUtil.getMavenComponents(this.rawModule.id);
+            return MavenUtil.getMavenComponents(this.rawModule.id)
         } catch (err) {
             throw new Error(
                 `Failed to resolve maven components for module ${this.rawModule.name} (${this.rawModule.id}) of type ${
                     this.rawModule.type
                 }. Reason: ${(err as Error).message}`
-            );
+            )
         }
     }
 
@@ -205,19 +205,19 @@ export class ShinyModule {
             return {
                 value: true,
                 def: true,
-            };
+            }
         } else {
             return {
                 value: this.rawModule.required.value ?? true,
                 def: this.rawModule.required.def ?? true,
-            };
+            }
         }
     }
 
     private resolveLocalPath(commonDir: string, instanceDir: string): string {
         // Version Manifests have a pre-determined path.
         if (this.rawModule.type === Type.VersionManifest) {
-            return join(commonDir, 'versions', this.rawModule.id, `${this.rawModule.id}.json`);
+            return join(commonDir, 'versions', this.rawModule.id, `${this.rawModule.id}.json`)
         }
 
         const relativePath =
@@ -228,7 +228,7 @@ export class ShinyModule {
                 this.mavenComponents.version,
                 this.mavenComponents.classifier,
                 this.mavenComponents.extension
-            );
+            )
 
         switch (this.rawModule.type) {
             case Type.Library:
@@ -236,33 +236,33 @@ export class ShinyModule {
             case Type.ForgeHosted:
             case Type.Fabric:
             case Type.LiteLoader:
-                return join(commonDir, 'libraries', relativePath);
+                return join(commonDir, 'libraries', relativePath)
             case Type.ForgeMod:
             case Type.LiteMod:
                 // TODO Move to /mods/forge eventually..
-                return join(commonDir, 'modstore', relativePath);
+                return join(commonDir, 'modstore', relativePath)
             case Type.FabricMod:
-                return join(commonDir, 'mods', 'fabric', relativePath);
+                return join(commonDir, 'mods', 'fabric', relativePath)
             case Type.File:
             default:
-                return join(instanceDir, this.serverId, relativePath);
+                return join(instanceDir, this.serverId, relativePath)
         }
     }
 
     public hasMavenComponents(): boolean {
-        return this.mavenComponents != null;
+        return this.mavenComponents != null
     }
 
     public getMavenComponents(): Readonly<MavenComponents> {
-        return this.mavenComponents;
+        return this.mavenComponents
     }
 
     public getRequired(): Readonly<Required<ShinyRequired>> {
-        return this.required;
+        return this.required
     }
 
     public getPath(): string {
-        return this.localPath;
+        return this.localPath
     }
 
     public getMavenIdentifier(): string {
@@ -272,7 +272,7 @@ export class ShinyModule {
             this.mavenComponents.version,
             this.mavenComponents.classifier,
             this.mavenComponents.extension
-        );
+        )
     }
 
     public getExtensionlessMavenIdentifier(): string {
@@ -281,17 +281,17 @@ export class ShinyModule {
             this.mavenComponents.artifact,
             this.mavenComponents.version,
             this.mavenComponents.classifier
-        );
+        )
     }
 
     public getVersionlessMavenIdentifier(): string {
         return MavenUtil.mavenComponentsToVersionlessIdentifier(
             this.mavenComponents.group,
             this.mavenComponents.artifact
-        );
+        )
     }
 
     public hasSubModules(): boolean {
-        return this.subModules.length > 0;
+        return this.subModules.length > 0
     }
 }
