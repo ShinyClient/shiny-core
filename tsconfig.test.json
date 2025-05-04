@@ -1,11 +1,9 @@
 {
     "compilerOptions": {
-      "module": "commonjs",
-      "esModuleInterop": true,
-      "resolveJsonModule": true
+        "module": "commonjs",
+        "esModuleInterop": true,
+        "resolveJsonModule": true
     },
-    "include": [
-      "test"
-    ],
+    "include": ["test"],
     "extends": "./tsconfig.json"
-  }
+}
