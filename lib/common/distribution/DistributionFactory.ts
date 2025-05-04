@@ -215,20 +215,19 @@ export class ShinyModule {
     }
 
     private resolveLocalPath(commonDir: string, instanceDir: string): string {
+
         // Version Manifests have a pre-determined path.
-        if (this.rawModule.type === Type.VersionManifest) {
+        if(this.rawModule.type === Type.VersionManifest) {
             return join(commonDir, 'versions', this.rawModule.id, `${this.rawModule.id}.json`)
         }
 
-        const relativePath =
-            this.rawModule.artifact.path ??
-            MavenUtil.mavenComponentsAsNormalizedPath(
-                this.mavenComponents.group,
-                this.mavenComponents.artifact,
-                this.mavenComponents.version,
-                this.mavenComponents.classifier,
-                this.mavenComponents.extension
-            )
+        const relativePath = this.rawModule.artifact.path ?? MavenUtil.mavenComponentsAsNormalizedPath(
+            this.mavenComponents.group,
+            this.mavenComponents.artifact,
+            this.mavenComponents.version,
+            this.mavenComponents.classifier,
+            this.mavenComponents.extension
+        )
 
         switch (this.rawModule.type) {
             case Type.Library:
@@ -245,8 +244,9 @@ export class ShinyModule {
                 return join(commonDir, 'mods', 'fabric', relativePath)
             case Type.File:
             default:
-                return join(instanceDir, this.serverId, relativePath)
+                return join(instanceDir, this.serverId, relativePath) 
         }
+        
     }
 
     public hasMavenComponents(): boolean {
@@ -287,11 +287,13 @@ export class ShinyModule {
     public getVersionlessMavenIdentifier(): string {
         return MavenUtil.mavenComponentsToVersionlessIdentifier(
             this.mavenComponents.group,
-            this.mavenComponents.artifact
+            this.mavenComponents.artifact,
+            this.mavenComponents.classifier
         )
     }
 
     public hasSubModules(): boolean {
         return this.subModules.length > 0
     }
+
 }
