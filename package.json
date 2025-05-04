@@ -1,6 +1,6 @@
 {
     "name": "shiny-core",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "A library which works as a Shiny mechanisms to work.",
     "main": "dist/index.js",
     "scripts": {
